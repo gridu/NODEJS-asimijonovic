@@ -12,7 +12,7 @@ router.use(authController.restrictTo('admin', 'lead-guide'));
 
 router
   .route('/')
-  .get(bookingController.getAllBookings)
+  // .get(bookingController.getAllBookings)
   .post(bookingController.createBooking);
 
 router

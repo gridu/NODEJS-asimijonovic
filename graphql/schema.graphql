@@ -1,0 +1,78 @@
+type Query {
+    bookings(query: String): [Booking!]!
+    tours(data: QueryInput): [Tour]!
+    tour(id: ID): Tour
+    top5cheapTours: [Tour]
+    tourStats: [TourStats]
+    mounthlyPlan(year: Int!): [MountlyPlan]
+    users(query: String): [User!]!
+}
+
+type Booking {
+    price: Float!
+    createdAt: String!
+}
+
+type Tour {
+    name: String!
+    slug: String
+    duration: Int!
+    maxGroupSize: Int!
+    difficulty: String
+    ratingsAverage: Float
+    ratingsQuantity: Int
+    price: Float!
+    priceDiscount: Float
+    summary: String!
+    description: String
+    imageCover: String!
+    images: [String]
+    createdAt: String
+    startDates: [String]
+    secretTour: Boolean
+    startLocation: Location
+    locations: [Location]
+    guides: [User]
+    durationWeeks: Float
+    reviews: [Review]
+}
+
+type User {
+    name: String!
+    photo: String!
+}
+
+type Review {
+    review: String!
+    rating: Float!
+}
+
+type Location {
+    type: String!
+    coordinates: [Float!]!
+    description: String
+    day: Int
+}
+
+type TourStats {
+    _id: String,
+    numTours: Int
+    numRatings: Int
+    avgRating: Float
+    avgPrice: Float
+    minPrice: Float
+    maxPrice: Float
+}
+
+type MountlyPlan {
+    numTourStarts: Int
+    tours: [String]
+    month: Int
+}
+
+input QueryInput {
+    page: Int
+    sort: String
+    limit: Int
+    fields: String
+}

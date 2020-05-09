@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -10,6 +11,7 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const cors = require('cors');
+const { ApolloServer, gql } = require('apollo-server-express');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -22,6 +24,21 @@ const viewRouter = require('./routes/viewRoutes');
 
 // Start express app
 const app = express();
+
+const myGraphQLSchema = fs.readFileSync('./graphql/schema.graphql').toString("utf-8");
+
+// todo ana apolloserver or graphql as middleware???
+const Query = require('./graphql/resolvers/Query');
+
+// This function is called with every request, so you can set the context based on the request's details (such as HTTP headers)
+// so it can be added as a third arg to constructor:
+// context: ({ req }) => ({
+//  authScope: getScope(req.headers.authorization)
+// })
+
+const server = new ApolloServer({ typeDefs: myGraphQLSchema, resolvers: { Query } });
+
+server.applyMiddleware({ app });
 
 app.enable('trust proxy');
 
@@ -103,9 +120,9 @@ app.use((req, res, next) => {
 // 3) ROUTES
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
-app.use('/api/v1/users', userRouter);
-app.use('/api/v1/reviews', reviewRouter);
-app.use('/api/v1/bookings', bookingRouter);
+// app.use('/api/v1/users', userRouter);
+// app.use('/api/v1/reviews', reviewRouter);
+// app.use('/api/v1/bookings', bookingRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

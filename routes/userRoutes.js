@@ -28,7 +28,7 @@ router.use(authController.restrictTo('admin'));
 
 router
   .route('/')
-  .get(userController.getAllUsers)
+  // .get(userController.getAllUsers)
   .post(userController.createUser);
 
 router

@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const GraphQLServer = require('graphql-yoga').GraphQLServer;
+const Query = require('./graphql/resolvers/Query');
 
 process.on('uncaughtException', err => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
@@ -22,6 +24,19 @@ mongoose
     useFindAndModify: false
   })
   .then(() => console.log('DB connection successful!'));
+
+
+// console.log(Query);
+// const graphqlServer = new GraphQLServer({
+//   typeDefs: './graphql/schema.graphql',
+//   resolvers: {
+//     Query
+//   }
+// });
+// // IMPORTANT: graphql is reading port number from env vars by default!!
+// graphqlServer.start({port: 4000}, () => {
+//   console.log('Graphql server started');
+// });
 
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {

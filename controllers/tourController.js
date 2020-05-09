@@ -4,6 +4,7 @@ const Tour = require('./../models/tourModel');
 const catchAsync = require('./../utils/catchAsync');
 const factory = require('./handlerFactory');
 const AppError = require('./../utils/appError');
+const APIFeatures = require('../utils/apiFeatures');
 
 const multerStorage = multer.memoryStorage();
 
@@ -72,7 +73,7 @@ exports.createTour = factory.createOne(Tour);
 exports.updateTour = factory.updateOne(Tour);
 exports.deleteTour = factory.deleteOne(Tour);
 
-exports.getTourStats = catchAsync(async (req, res, next) => {
+exports.getTourStats = async (req, res, next) => {
   const stats = await Tour.aggregate([
     {
       $match: { ratingsAverage: { $gte: 4.5 } }
@@ -96,15 +97,11 @@ exports.getTourStats = catchAsync(async (req, res, next) => {
     // }
   ]);
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      stats
-    }
-  });
-});
+  console.log('stats ', stats);
+  return stats;
+};
 
-exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
+exports.getMonthlyPlan = async (req, res, next) => {
   const year = req.params.year * 1; // 2021
 
   const plan = await Tour.aggregate([
@@ -142,13 +139,9 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     }
   ]);
 
-  res.status(200).json({
-    status: 'success',
-    data: {
-      plan
-    }
-  });
-});
+  console.log(plan)
+  return plan;
+};
 
 // /tours-within/:distance/center/:latlng/unit/:unit
 // /tours-within/233/center/34.111745,-118.113491/unit/mi
