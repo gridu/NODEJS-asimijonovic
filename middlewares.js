@@ -39,8 +39,12 @@ const authMiddleware = {
     },
     Mutation: {
         updateTour: getProtectAndRestrictToFn('admin', 'lead-guide'),
-        // createTour: getProtectAndRestrictToFn('admin', 'lead-guide'),
-        // deleteTour: getProtectAndRestrictToFn('admin', 'lead-guide')
+        createTour: getProtectAndRestrictToFn('admin', 'lead-guide'),
+        deleteTour: getProtectAndRestrictToFn('admin', 'lead-guide'),
+        getBooking: getProtectAndRestrictToFn('admin', 'lead-guide'),
+        createBooking: getProtectAndRestrictToFn('admin', 'lead-guide'),
+        updateBooking: getProtectAndRestrictToFn('admin', 'lead-guide'),
+        deleteBooking: getProtectAndRestrictToFn('admin', 'lead-guide')
     }
 }
 

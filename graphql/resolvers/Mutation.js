@@ -52,6 +52,13 @@ const Mutation = {
 
 
     // Booking
+    async getBooking(parent, { id }, ctx, info) {
+        return await bookingController.getBooking({
+            params: {
+                id: id
+            }
+        });
+    },
     async createBooking(parent, { data }, ctx, info) {
         return await bookingController.createBooking({
             body: data
@@ -65,6 +72,13 @@ const Mutation = {
             body: data
         });
     },
+    async deleteBooking(parent, { id }, ctx, info) {
+        return await bookingController.deleteBooking({
+            params: {
+                id: id
+            }
+        });
+    }
 
 };
 

@@ -115,7 +115,6 @@ exports.protect = async (req, res, next) => {
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
   res.locals.user = currentUser;
-  next();
 };
 
 // Only for rendered pages, no errors!

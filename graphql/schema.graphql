@@ -18,11 +18,15 @@ type Mutation {
     login(data: LoginUserInput): AuthPayload!
     forgotPassword(email: String): String
     resetPassword(data: ResetPasswordInput): AuthPayload!
-    createBooking(data: CreateBookingData): Booking
-    updateBooking(data: UpdateBookingData): Booking
+    getBooking(id: ID!): Booking!
+    createBooking(data: CreateBookingData!): Booking!
+    updateBooking(id: ID!, data: UpdateBookingData!): Booking!
+    deleteBooking(id: ID!): Booking
 }
 
 type Booking {
+    tour: String
+    user: String
     price: Float!
     createdAt: String!
 }
@@ -124,8 +128,8 @@ input CreateTourData {
 }
 
 input CreateBookingData {
-    tourId: String!
-    userId: String!
+    tour: String!
+    user: String!
     price: Float!
     paid: Boolean
 }
