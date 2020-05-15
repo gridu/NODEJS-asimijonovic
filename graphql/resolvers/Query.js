@@ -33,6 +33,23 @@ const Query = {
                 year: year
             }
         });
+    },
+    async toursWithin(parent, { distance, latlng, unit }, ctx, info) {
+        return await tourController.getToursWithin({
+            params: {
+                distance,
+                latlng,
+                unit
+            }
+        });
+    },
+    async toursDistances(parent, { latlng, unit }, ctx, info) {
+        return await tourController.getDistances({
+            params: {
+                latlng,
+                unit
+            }
+        });
     }
 }
 

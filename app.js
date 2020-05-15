@@ -11,7 +11,11 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const compression = require('compression');
 const cors = require('cors');
-const { ApolloServer, gql } = require('apollo-server-express');
+
+const { ApolloServer } = require('apollo-server-express');
+const applyMiddleware = require('graphql-middleware').applyMiddleware;
+const middlewares = require('./middlewares');
+const makeExecutableSchema = require('graphql-tools').makeExecutableSchema;
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -27,8 +31,8 @@ const app = express();
 
 const myGraphQLSchema = fs.readFileSync('./graphql/schema.graphql').toString("utf-8");
 
-// todo ana apolloserver or graphql as middleware???
 const Query = require('./graphql/resolvers/Query');
+const Mutation = require('./graphql/resolvers/Mutation');
 
 // This function is called with every request, so you can set the context based on the request's details (such as HTTP headers)
 // so it can be added as a third arg to constructor:
@@ -36,9 +40,24 @@ const Query = require('./graphql/resolvers/Query');
 //  authScope: getScope(req.headers.authorization)
 // })
 
-const server = new ApolloServer({ typeDefs: myGraphQLSchema, resolvers: { Query } });
+const executableSchema = makeExecutableSchema({ 
+  typeDefs: myGraphQLSchema, 
+  resolvers: { Query, Mutation } 
+});
+const schemaWithMiddleware = applyMiddleware(executableSchema, ...middlewares);
 
-server.applyMiddleware({ app });
+const graphqlServer = new ApolloServer({ 
+  typeDefs: myGraphQLSchema, 
+  resolvers: { Query },
+  context: ({ req, res }) => ({ req, res }),
+  schema: schemaWithMiddleware,
+  // formatError: (error) => {
+  //   return {
+  //     message: error.message,
+  //     code: error.extensions.code
+  //   }
+  // }
+});
 
 app.enable('trust proxy');
 
@@ -77,6 +96,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
+// and not as json - which is happening below in middleware
 app.post(
   '/webhook-checkout',
   bodyParser.raw({ type: 'application/json' }),
@@ -120,10 +140,15 @@ app.use((req, res, next) => {
 // 3) ROUTES
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
-// app.use('/api/v1/users', userRouter);
+app.use('/api/v1/users', userRouter);
 // app.use('/api/v1/reviews', reviewRouter);
-// app.use('/api/v1/bookings', bookingRouter);
+app.use('/api/v1/bookings', bookingRouter);
 
+// applying graphql as middleware at the end, after all middlewares
+graphqlServer.applyMiddleware({ app });
+
+// .all for all http methods not caught by previous middlewares/routers
+// because middlewares are executing in order they are defined
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

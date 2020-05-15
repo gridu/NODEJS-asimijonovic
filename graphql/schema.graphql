@@ -4,8 +4,22 @@ type Query {
     tour(id: ID): Tour
     top5cheapTours: [Tour]
     tourStats: [TourStats]
+    toursWithin(distance: Int, unit: String, latlng: String): [Tour]
+    toursDistances(unit: String, latlng: String): [Tour]
     mounthlyPlan(year: Int!): [MountlyPlan]
     users(query: String): [User!]!
+}
+
+type Mutation {
+    updateTour(id: ID, data: UpdateTourData): Tour
+    createTour(data: CreateTourData): Tour
+    deleteTour(id: ID): Tour
+    signUp(data: CreateUserInput): AuthPayload!
+    login(data: LoginUserInput): AuthPayload!
+    forgotPassword(email: String): String
+    resetPassword(data: ResetPasswordInput): AuthPayload!
+    createBooking(data: CreateBookingData): Booking
+    updateBooking(data: UpdateBookingData): Booking
 }
 
 type Booking {
@@ -42,6 +56,11 @@ type User {
     photo: String!
 }
 
+type AuthPayload {
+    token: String
+    user: User
+}
+
 type Review {
     review: String!
     rating: Float!
@@ -75,4 +94,68 @@ input QueryInput {
     sort: String
     limit: Int
     fields: String
+}
+
+input UpdateTourData {
+    name: String
+    duration: Int
+    maxGroupSize: Int
+    difficulty: String
+    price: Float
+    priceDiscount: Float
+    summary: String
+    description: String
+    imageCover: String
+    images: [String]
+}
+
+input CreateTourData {
+    name: String!
+    duration: Int!
+    maxGroupSize: Int!
+    difficulty: String
+    price: Float!
+    priceDiscount: Float
+    summary: String!
+    description: String
+    imageCover: String
+    images: [String]
+    startLocation: LocationInput
+}
+
+input CreateBookingData {
+    tourId: String!
+    userId: String!
+    price: Float!
+    paid: Boolean
+}
+
+input UpdateBookingData {
+    price: Float!
+    paid: Boolean
+}
+
+input LocationInput {
+    description: String
+    type: String
+    coordinates: [Float]
+    day: Int
+}
+
+input CreateUserInput {
+    name: String!
+    email: String!
+    password: String!
+    passwordConfirm: String!
+}
+
+input LoginUserInput {
+    email: String!
+    password: String!
+}
+
+input ResetPasswordInput {
+    password: String!
+    passwordConfirm: String!
+    token: String!
 }

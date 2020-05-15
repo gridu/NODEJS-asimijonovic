@@ -3,52 +3,36 @@ const AppError = require('./../utils/appError');
 const APIFeatures = require('./../utils/apiFeatures');
 
 exports.deleteOne = Model =>
-  catchAsync(async (req, res, next) => {
+  async (req, res, next) => {
     const doc = await Model.findByIdAndDelete(req.params.id);
 
     if (!doc) {
-      return next(new AppError('No document found with that ID', 404));
+      return (new AppError('No document found with that ID', 404));
     }
-
-    res.status(204).json({
-      status: 'success',
-      data: null
-    });
-  });
+  };
 
 exports.updateOne = Model =>
-  catchAsync(async (req, res, next) => {
+  async (req, res, next) => {
     const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true
     });
 
     if (!doc) {
-      return next(new AppError('No document found with that ID', 404));
+      throw new AppError('No document found with that ID', 404);
     }
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        data: doc
-      }
-    });
-  });
+    return doc;
+  };
 
 exports.createOne = Model =>
-  catchAsync(async (req, res, next) => {
-    const doc = await Model.create(req.body);
-
-    res.status(201).json({
-      status: 'success',
-      data: {
-        data: doc
-      }
-    });
-  });
+  async (req, res, next) => {
+    return await Model.create(req.body);
+  };
 
 exports.getOne = (Model, popOptions) =>
   async (req, res, next) => {
+    console.log('u getone')
     let query = Model.findById(req.params.id);
     if (popOptions) query = query.populate(popOptions);
     const doc = await query;
