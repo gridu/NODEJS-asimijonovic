@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
@@ -11,6 +12,11 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const cors = require('cors');
 
+const { ApolloServer } = require('apollo-server-express');
+const applyMiddleware = require('graphql-middleware').applyMiddleware;
+const middlewares = require('./middlewares');
+const makeExecutableSchema = require('graphql-tools').makeExecutableSchema;
+
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
@@ -22,6 +28,25 @@ const viewRouter = require('./routes/viewRoutes');
 
 // Start express app
 const app = express();
+
+// graphql configuration
+const myGraphQLSchema = fs.readFileSync('./graphql/schema.graphql').toString("utf-8");
+
+const Query = require('./graphql/resolvers/Query');
+const Mutation = require('./graphql/resolvers/Mutation');
+
+const executableSchema = makeExecutableSchema({ 
+  typeDefs: myGraphQLSchema, 
+  resolvers: { Query, Mutation } 
+});
+const schemaWithMiddleware = applyMiddleware(executableSchema, ...middlewares);
+
+const graphqlServer = new ApolloServer({ 
+  typeDefs: myGraphQLSchema, 
+  resolvers: { Query },
+  context: ({ req, res }) => ({ req, res }),
+  schema: schemaWithMiddleware
+});
 
 app.enable('trust proxy');
 
@@ -60,6 +85,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 // Stripe webhook, BEFORE body-parser, because stripe needs the body as stream
+// and not as json - which is happening below in middleware
 app.post(
   '/webhook-checkout',
   bodyParser.raw({ type: 'application/json' }),
@@ -107,6 +133,11 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
 
+// applying graphql as middleware at the end, after all middlewares
+graphqlServer.applyMiddleware({ app });
+
+// .all for all http methods not caught by previous middlewares/routers
+// because middlewares are executing in order they are defined
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });

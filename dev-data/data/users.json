@@ -1,5 +1,14 @@
 [
   {
+    "_id": "5ec537a4eb4898737d093e09",
+    "name": "Ana Simijonovic",
+    "email": "ana_admin@gmail.com",
+    "role": "admin",
+    "active": true,
+    "photo": "user-1.jpg",
+    "password": "$2a$12$RddE2ygPDWkbiMeu3BwSe.Xmayx3d/S50HwHTuQL/1G9NU0zZB8zK"
+  },
+  {
     "_id": "5c8a1d5b0190b214360dc057",
     "name": "Jonas Schmedtmann",
     "email": "admin@natours.io",

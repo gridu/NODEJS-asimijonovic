@@ -1,0 +1,199 @@
+type Query {
+    bookings(query: QueryInput): [Booking]!
+    booking(id: ID!): Booking!
+    review(id: ID!): Review!
+    reviews(query: QueryInput): [Review]!
+    tours(query: QueryInput): [Tour]!
+    tour(id: ID): Tour
+    top5cheapTours: [Tour]
+    tourStats: [TourStats]
+    toursWithin(distance: Int, unit: String, latlng: String): [Tour]
+    toursDistances(unit: String, latlng: String): [Tour]
+    mounthlyPlan(year: Int!): [MountlyPlan]
+    users(query: QueryInput): [User]!
+}
+
+type Mutation {
+    updateTour(id: ID!, data: UpdateTourInput!): Tour
+    createTour(data: CreateTourInput!): Tour
+    deleteTour(id: ID!): Tour
+    signUp(data: CreateUserInput!): AuthPayload!
+    login(data: LoginUserInput!): AuthPayload!
+    updateUser(id: ID!, data: UpdateUserInput!): User!
+    deleteUser(id: ID!): User!
+    forgotPassword(email: String!): String
+    resetPassword(data: ResetPasswordInput!): AuthPayload!
+    createBooking(data: CreateBookingInput!): Booking!
+    updateBooking(id: ID!, data: UpdateBookingInput!): Booking!
+    deleteBooking(id: ID!): Booking
+    createReview(data: CreateReviewInput!): Review!
+    updateReview(id: ID!, data: UpdateReviewInput!): Review!
+    deleteReview(id: ID!): Review
+}
+
+type Booking {
+    id: String
+    tour: String
+    user: String
+    price: Float!
+    createdAt: String!
+    paid: Boolean
+}
+
+type Tour {
+    id: String
+    name: String!
+    slug: String
+    duration: Int!
+    maxGroupSize: Int!
+    difficulty: String
+    ratingsAverage: Float
+    ratingsQuantity: Int
+    price: Float!
+    priceDiscount: Float
+    summary: String!
+    description: String
+    imageCover: String!
+    images: [String]
+    createdAt: String
+    startDates: [String]
+    secretTour: Boolean
+    startLocation: Location
+    locations: [Location]
+    guides: [User]
+    durationWeeks: Float
+    reviews: [Review]
+}
+
+type Review {
+    review: String!
+    rating: Float!
+    user: User
+    tour: Tour
+}
+
+type User {
+    id: String
+    name: String!
+    role: String
+    email: String
+    photo: String!
+}
+
+type AuthPayload {
+    token: String
+    user: User
+}
+
+type Location {
+    type: String!
+    coordinates: [Float!]!
+    description: String
+    day: Int
+}
+
+type TourStats {
+    _id: String,
+    numTours: Int
+    numRatings: Int
+    avgRating: Float
+    avgPrice: Float
+    minPrice: Float
+    maxPrice: Float
+}
+
+type MountlyPlan {
+    numTourStarts: Int
+    tours: [String]
+    month: Int
+}
+
+input QueryInput {
+    page: Int
+    sort: String
+    limit: Int
+    fields: String
+}
+
+input UpdateTourInput {
+    name: String
+    duration: Int
+    maxGroupSize: Int
+    difficulty: String
+    price: Float
+    priceDiscount: Float
+    summary: String
+    description: String
+    imageCover: String
+    images: [String]
+}
+
+input CreateTourInput {
+    id: String
+    name: String!
+    duration: Int!
+    maxGroupSize: Int!
+    difficulty: String
+    price: Float!
+    priceDiscount: Float
+    summary: String!
+    description: String
+    imageCover: String
+    images: [String]
+    startLocation: LocationInput
+}
+
+input CreateBookingInput {
+    tour: String!
+    user: String!
+    price: Float!
+    paid: Boolean
+}
+
+input UpdateBookingInput {
+    price: Float!
+    paid: Boolean
+}
+
+input LocationInput {
+    description: String
+    type: String
+    coordinates: [Float]
+    day: Int
+}
+
+input CreateUserInput {
+    name: String!
+    email: String!
+    password: String!
+    passwordConfirm: String!
+    role: String
+}
+
+input LoginUserInput {
+    email: String!
+    password: String!
+}
+
+input UpdateUserInput {
+    name: String
+    photo: String
+}
+
+input ResetPasswordInput {
+    password: String!
+    passwordConfirm: String!
+    token: String!
+}
+
+input CreateReviewInput {
+    review: String!
+    rating: Int!
+    user: String!
+    tour: String!
+}
+
+input UpdateReviewInput {
+    review: String!
+    rating: Int!
+}
