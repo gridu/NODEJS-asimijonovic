@@ -42,8 +42,8 @@ exports.signup = async (req, res, next) => {
 
   // const url = `${req.protocol}://${req.get('host')}/me`;
   const url = `${req.headers.origin}/me`;
-  console.log(url);
-  // await new Email(newUser, url).sendWelcome();
+
+  await new Email(newUser, url).sendWelcome();
 
   return createSendToken(newUser, 201, req, res);
 };
@@ -67,8 +67,8 @@ exports.login = async (req, res, next) => {
 };
 
 exports.logout = (req, res) => {
-  // really workaround to send invalid token ('loggedout') 
-  // to override existing from the browser with short expiration time
+  // workaround to send invalid token ('loggedout') 
+  // to override existing from the browser and with short expiration time
   // because when using httpOnly option on creating cookie, it cannot be manipulated
   // from the front-end (deleted from local storage etc)
   // usually, this endpoint isn't needed, everything is settled down on fe
@@ -115,6 +115,10 @@ exports.protect = async (req, res, next) => {
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = currentUser;
   res.locals.user = currentUser;
+
+  if (next) {
+    next();
+  }
 };
 
 // Only for rendered pages, no errors!
@@ -178,12 +182,10 @@ exports.forgotPassword = async (req, res, next) => {
   console.log(resetToken)
   // 3) Send it to user's email
   try {
-    /*
     const resetURL = `${req.protocol}://${req.get(
       'host'
     )}/api/v1/users/resetPassword/${resetToken}`;
      await new Email(user, resetURL).sendPasswordReset();
-     */
 
     return 'Token sent to email!'
   

@@ -37,7 +37,7 @@ exports.getOne = (Model, popOptions) =>
     const doc = await query;
 
     if (!doc) {
-      return next(new AppError('No document found with that ID', 404));
+      throw new AppError('No document found with that ID', 404);
     }
 
     return doc;

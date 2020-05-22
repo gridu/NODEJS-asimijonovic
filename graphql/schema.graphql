@@ -1,37 +1,47 @@
 type Query {
-    bookings(query: String): [Booking!]!
-    tours(data: QueryInput): [Tour]!
+    bookings(query: QueryInput): [Booking]!
+    booking(id: ID!): Booking!
+    review(id: ID!): Review!
+    reviews(query: QueryInput): [Review]!
+    tours(query: QueryInput): [Tour]!
     tour(id: ID): Tour
     top5cheapTours: [Tour]
     tourStats: [TourStats]
     toursWithin(distance: Int, unit: String, latlng: String): [Tour]
     toursDistances(unit: String, latlng: String): [Tour]
     mounthlyPlan(year: Int!): [MountlyPlan]
-    users(query: String): [User!]!
+    users(query: QueryInput): [User]!
 }
 
 type Mutation {
-    updateTour(id: ID, data: UpdateTourData): Tour
-    createTour(data: CreateTourData): Tour
-    deleteTour(id: ID): Tour
-    signUp(data: CreateUserInput): AuthPayload!
-    login(data: LoginUserInput): AuthPayload!
-    forgotPassword(email: String): String
-    resetPassword(data: ResetPasswordInput): AuthPayload!
-    getBooking(id: ID!): Booking!
-    createBooking(data: CreateBookingData!): Booking!
-    updateBooking(id: ID!, data: UpdateBookingData!): Booking!
+    updateTour(id: ID!, data: UpdateTourInput!): Tour
+    createTour(data: CreateTourInput!): Tour
+    deleteTour(id: ID!): Tour
+    signUp(data: CreateUserInput!): AuthPayload!
+    login(data: LoginUserInput!): AuthPayload!
+    updateUser(id: ID!, data: UpdateUserInput!): User!
+    deleteUser(id: ID!): User!
+    forgotPassword(email: String!): String
+    resetPassword(data: ResetPasswordInput!): AuthPayload!
+    createBooking(data: CreateBookingInput!): Booking!
+    updateBooking(id: ID!, data: UpdateBookingInput!): Booking!
     deleteBooking(id: ID!): Booking
+    createReview(data: CreateReviewInput!): Review!
+    updateReview(id: ID!, data: UpdateReviewInput!): Review!
+    deleteReview(id: ID!): Review
 }
 
 type Booking {
+    id: String
     tour: String
     user: String
     price: Float!
     createdAt: String!
+    paid: Boolean
 }
 
 type Tour {
+    id: String
     name: String!
     slug: String
     duration: Int!
@@ -55,19 +65,24 @@ type Tour {
     reviews: [Review]
 }
 
+type Review {
+    review: String!
+    rating: Float!
+    user: User
+    tour: Tour
+}
+
 type User {
+    id: String
     name: String!
+    role: String
+    email: String
     photo: String!
 }
 
 type AuthPayload {
     token: String
     user: User
-}
-
-type Review {
-    review: String!
-    rating: Float!
 }
 
 type Location {
@@ -100,7 +115,7 @@ input QueryInput {
     fields: String
 }
 
-input UpdateTourData {
+input UpdateTourInput {
     name: String
     duration: Int
     maxGroupSize: Int
@@ -113,7 +128,8 @@ input UpdateTourData {
     images: [String]
 }
 
-input CreateTourData {
+input CreateTourInput {
+    id: String
     name: String!
     duration: Int!
     maxGroupSize: Int!
@@ -127,14 +143,14 @@ input CreateTourData {
     startLocation: LocationInput
 }
 
-input CreateBookingData {
+input CreateBookingInput {
     tour: String!
     user: String!
     price: Float!
     paid: Boolean
 }
 
-input UpdateBookingData {
+input UpdateBookingInput {
     price: Float!
     paid: Boolean
 }
@@ -151,6 +167,7 @@ input CreateUserInput {
     email: String!
     password: String!
     passwordConfirm: String!
+    role: String
 }
 
 input LoginUserInput {
@@ -158,8 +175,25 @@ input LoginUserInput {
     password: String!
 }
 
+input UpdateUserInput {
+    name: String
+    photo: String
+}
+
 input ResetPasswordInput {
     password: String!
     passwordConfirm: String!
     token: String!
+}
+
+input CreateReviewInput {
+    review: String!
+    rating: Int!
+    user: String!
+    tour: String!
+}
+
+input UpdateReviewInput {
+    review: String!
+    rating: Int!
 }

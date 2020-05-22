@@ -1,11 +1,12 @@
 const bookingController = require('../../controllers/bookingController');
 const tourController = require('../../controllers/tourController');
+const reviewController = require('../../controllers/reviewController');
 const userController = require('../../controllers/userController');
 
 const Query = {
-    async tours(parent, { data }, ctx, info) {
+    async tours(parent, { query }, ctx, info) {
         return await tourController.getAllTours({
-            query: data
+            query
         });
     },
     async tour(parent, { id }, ctx, info) {
@@ -50,7 +51,42 @@ const Query = {
                 unit
             }
         });
-    }
+    },
+
+    // Booking
+    async booking(parent, { id }, ctx, info) {
+        return await bookingController.getBooking({
+            params: {
+                id: id
+            }
+        });
+    },
+    async bookings(parent, { query }, ctx, info) {
+        return await bookingController.getAllBookings({
+            query
+        });
+    },
+
+    // Review
+    async review(parent, { id }, ctx, info) {
+        return await reviewController.getReview({
+            params: {
+                id: id
+            }
+        });
+    },
+    async reviews(parent, { query }, ctx, info) {
+        return await reviewController.getAllReviews({
+            query
+        });
+    },
+
+    // User
+    async users(parent, { query }, ctx, info) {
+        return await userController.getAllUsers({
+            query
+        });
+    },
 }
 
 module.exports = Query;

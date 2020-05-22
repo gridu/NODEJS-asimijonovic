@@ -29,16 +29,11 @@ const viewRouter = require('./routes/viewRoutes');
 // Start express app
 const app = express();
 
+// graphql configuration
 const myGraphQLSchema = fs.readFileSync('./graphql/schema.graphql').toString("utf-8");
 
 const Query = require('./graphql/resolvers/Query');
 const Mutation = require('./graphql/resolvers/Mutation');
-
-// This function is called with every request, so you can set the context based on the request's details (such as HTTP headers)
-// so it can be added as a third arg to constructor:
-// context: ({ req }) => ({
-//  authScope: getScope(req.headers.authorization)
-// })
 
 const executableSchema = makeExecutableSchema({ 
   typeDefs: myGraphQLSchema, 
@@ -50,13 +45,7 @@ const graphqlServer = new ApolloServer({
   typeDefs: myGraphQLSchema, 
   resolvers: { Query },
   context: ({ req, res }) => ({ req, res }),
-  schema: schemaWithMiddleware,
-  // formatError: (error) => {
-  //   return {
-  //     message: error.message,
-  //     code: error.extensions.code
-  //   }
-  // }
+  schema: schemaWithMiddleware
 });
 
 app.enable('trust proxy');
@@ -141,7 +130,7 @@ app.use((req, res, next) => {
 app.use('/', viewRouter);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
-// app.use('/api/v1/reviews', reviewRouter);
+app.use('/api/v1/reviews', reviewRouter);
 app.use('/api/v1/bookings', bookingRouter);
 
 // applying graphql as middleware at the end, after all middlewares
