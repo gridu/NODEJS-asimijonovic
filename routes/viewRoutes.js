@@ -10,8 +10,6 @@ const router = express.Router();
 router.use(viewsController.alerts);
 
 router.get('/', 
-  // todo anas should remove next line once app is deployed
-  bookingController.createBookingCheckoutWorkaround,
   authController.isLoggedIn, 
   viewsController.getOverview);
 
