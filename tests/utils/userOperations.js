@@ -1,5 +1,5 @@
 const client = require('./apolloClient');
-const gql = require('apollo-boost').gql;
+const { gql } = require('apollo-boost');
 
 const signupMutation = gql`
     mutation($data: CreateUserInput!) {

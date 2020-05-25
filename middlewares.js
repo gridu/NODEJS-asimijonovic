@@ -1,7 +1,6 @@
 const authController = require('./controllers/authController');
 const tourController = require('./controllers/tourController');
-const AuthError = require('apollo-server-express').AuthenticationError;
-const UserInputError = require('apollo-server-express').UserInputError;
+const { AuthenticationError, UserInputError } = require('apollo-server-express');
 
 
 const updateAndResizeTourImages = async (resolve, parent, args, context, info) => {        
@@ -27,7 +26,7 @@ const protectAndRestrict = (...roles) => {
             return resolve(parent, args, context, info);
         
         } catch({message}) {
-            throw new AuthError(message);
+            throw new AuthenticationError(message);
         }
     };
   };
@@ -38,7 +37,7 @@ const protect = async (resolve, parent, args, context, info) => {
         return resolve(parent, args, context, info);
         
     } catch({message}) {
-        throw new AuthError(message);
+        throw new AuthenticationError(message);
     }
 }
 

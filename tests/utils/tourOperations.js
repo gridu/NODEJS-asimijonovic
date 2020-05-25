@@ -1,4 +1,4 @@
-const gql = require('apollo-boost').gql;
+const { gql } = require('apollo-boost');
 const client = require('./apolloClient');
 
 const createTourMutation = gql`

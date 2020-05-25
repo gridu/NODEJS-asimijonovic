@@ -12,10 +12,9 @@ const bodyParser = require('body-parser');
 const compression = require('compression');
 const cors = require('cors');
 
-const { ApolloServer } = require('apollo-server-express');
-const applyMiddleware = require('graphql-middleware').applyMiddleware;
+const { ApolloServer, makeExecutableSchema } = require('apollo-server-express');
+const { applyMiddleware } = require('graphql-middleware');
 const middlewares = require('./middlewares');
-const makeExecutableSchema = require('graphql-tools').makeExecutableSchema;
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -41,9 +40,7 @@ const executableSchema = makeExecutableSchema({
 });
 const schemaWithMiddleware = applyMiddleware(executableSchema, ...middlewares);
 
-const graphqlServer = new ApolloServer({ 
-  typeDefs: myGraphQLSchema, 
-  resolvers: { Query },
+const graphqlServer = new ApolloServer({
   context: ({ req, res }) => ({ req, res }),
   schema: schemaWithMiddleware
 });

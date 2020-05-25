@@ -1,5 +1,5 @@
 const ApolloClient = require('apollo-boost').default;
-const InMemoryCache = require('apollo-cache-inmemory').InMemoryCache;
+const { InMemoryCache } = require('apollo-cache-inmemory');
 require('cross-fetch/polyfill');
 
 const httpUrl = 'http://localhost:3000/graphql';
